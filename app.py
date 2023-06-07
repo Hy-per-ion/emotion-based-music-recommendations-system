@@ -3,11 +3,11 @@ import streamlit as st
 import pandas as pd
 import cv2
 from collections import Counter
-
 from tensorflow.python.keras import Sequential
 from tensorflow.python.keras.layers import Conv2D, MaxPooling2D, Dropout, Flatten, Dense
 
 df = pd.read_csv('muse_v3.csv')
+st.set_page_config(page_title='EBMRS', page_icon=':musical_note:', layout="wide")
 
 df['link'] = df['lastfm_url']
 df['name'] = df["track"]
@@ -28,7 +28,7 @@ def fun(li):
     dat = pd.DataFrame()
     if len(li) == 1:
         v = li[0]
-        t = 30
+        t = 5
         if v == 'Neutral':
             dat = dat.append(df_neutral.sample(n=t))
         elif v == 'Angry':
@@ -108,11 +108,11 @@ def fun(li):
 
 def pre(l):
     result = [item for items, c in Counter(l).most_common() for item in [items] * c]
-    temp = []
+    tem = []
     for xt in result:
-        if xt not in temp:
-            temp.append(xt)
-    return temp
+        if xt not in tem:
+            tem.append(xt)
+    return tem
 
 
 model = Sequential()
@@ -135,10 +135,10 @@ emotion_dict = {0: "Angry", 1: "Disgusted", 2: "Fearful", 3: "Happy", 4: "Neutra
 
 cv2.ocl.setUseOpenCL(False)
 cap = cv2.VideoCapture(0)
-st.markdown("<h2 style='text-align: center; color: white;'><b>Emotion based music recommendation</b></h2>",
+st.markdown("<h2 style='text-align: center; color: white;'><b>🎶Emotion Based Music Recommendation🎶</b></h2>",
             unsafe_allow_html=True)
 st.markdown(
-    "<h5 style='text-align: center; color: grey;'><b>Click on the name of the recommended song to play it </b></h5>",
+    "<h5 style='text-align: center; color: grey;'><b>♬Click on the name of the recommended song to play it ♬</b></h5>",
     unsafe_allow_html=True)
 st.write("------------------------------------------------------------------------------------------------------------")
 _, _, col3, _, _ = st.columns(5)
@@ -146,7 +146,7 @@ lis = []
 ul = []
 temp = []
 with col3:
-    if st.button('SCAN EMOTION'):
+    if st.button('CLICK HERE TO SCAN FOR EMOTION'):
         count = 0
         lis.clear()
         while True:
@@ -197,18 +197,21 @@ with col3:
             st.markdown(
                 f"<h3 style='text-align: center; color: #f9f9f9;'>Detected Emotions: <span style='color: #f4d03f;'>{temp[0]}</span>, <span style='color: #f4d03f;'>{temp[1]}</span>, <span style='color: #f4d03f;'>{temp[2]}</span>, and more...</h3>",
                 unsafe_allow_html=True)
-    st.text("")
-    st.write("---------------------------------------------------------------------------------------------------------------------------------------------------------------------")
+    st.write(
+        "---------------------------------------------------------------------------------------------------------------------------------------------------------------------")
 _, col2, _, = st.columns(3)
 with col2:
-    data = fun(temp)
+    data = fun(temp).head(5)
     for ind in data.index:
         name = data['name'][ind]
         emotional = data['emotional'][ind]
         pleasant = data['pleasant'][ind]
         link = data['link'][ind]
         artist = data['artist'][ind]
-        st.markdown(f"<h4 style='text-align: center; color: #f9f9f9;'><a href={link}>{name} - {artist}</a></h4>", unsafe_allow_html=True)
-        st.markdown(f"<p style='text-align: center; color: #f9f9f9;'>Emotional Score: {emotional} | Pleasant Score: {pleasant}</p>", unsafe_allow_html=True)
+        st.markdown(f"<h4 style='text-align: center; color: #f9f9f9;'><a href={link}>{name} - {artist}</a></h4>",
+                    unsafe_allow_html=True)
+        st.markdown(
+            f"<p style='text-align: center; color: #f9f9f9;'>Emotional Score: {emotional} | Pleasant Score: {pleasant}</p>",
+            unsafe_allow_html=True)
         st.write("----------------------------------------------------------------------------------------------------")
         st.text("")
